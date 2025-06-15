@@ -1,0 +1,33 @@
+name: Update EPG
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'  # Every day at 3 AM UTC
+
+jobs:
+  fetch-epg:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run fetch_epg.py
+        run: python fetch_epg.py
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "RubioTV Bot"
+          git config user.email "bot@rubiotv"
+          git add epg.json
+          git commit -m "EPG auto-update"
+          git push
